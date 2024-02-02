@@ -1,5 +1,5 @@
 ---
-title: "PATTERNS OF SEDENTARY TIME ACCUMULATION IN NON-INSTITUTIONALIZED US POPULATION: A 2003-2006 NHANES AGE-BASED ANALYSIS"
+title: "Patterns of sedentary time accumulation according to age in the United States: A 2003-2006 NHANES analysis"
 author: "Pierre-Yves de Müllenheim"
 date: "`r Sys.Date()`"
 output: 
@@ -44,6 +44,10 @@ pre {
 pre code {
   white-space: inherit;
 }
+.hljs-keyword {
+    color: black;
+    font-weight: bold;
+}
 ```
 
 ```{r setup, include = FALSE}
@@ -59,19 +63,15 @@ library(dplyr)
 library(forcats)
 library(ggplot2)
 library(RColorBrewer)
+library(readr)
 library(rnhanesdata)
 library(scales)
 library(skimr)
+library(stringr)
 library(survey)
-library(readr)
 library(targets)
 library(tidyr)
 source("R/get_adj_quantiles_by.R")
-```
-
-# Remind accelerometer processing settings
-```{r}
-read_csv2("config.csv")
 ```
 
 # Load data 
@@ -80,7 +80,7 @@ tar_load(df_final)
 ```
 
 # Inspect completion rate
-```{r, out.width='100%', fig.height=5, fig.cap="No data is available for preschoolers"}
+```{r, out.width='100%', fig.height=5}
 df_final |> 
   group_by(CAT_AGE) |> 
   mutate(
@@ -97,12 +97,12 @@ df_final |>
   mutate(skim_variable = as.factor(skim_variable) |> 
            fct_relevel("minutes_SED", "mean_breaks", "alpha", "MBD", "UBD", "gini") |>
            fct_recode(
-             "Sedentary minutes" = "minutes_SED",
-             "Mean sedentary breaks" = "mean_breaks",
+             "Mean daily sedentary minutes" = "minutes_SED",
+             "Mean daily sedentary breaks" = "mean_breaks",
              "Median bout duration (min)" = "MBD",
              "Usual bout duration (min)" = "UBD",
-             "Alpha" = "alpha", 
-             "Gini" = "gini"
+             "Power-law exponent alpha" = "alpha", 
+             "Gini index" = "gini"
              )
          ) |> 
   ggplot(aes(x = CAT_AGE, y = complete_rate * 100, fill = CAT_AGE)) +
@@ -118,7 +118,7 @@ df_final |>
   )
 ```
 
-# Reweight sample participants
+# Get adjusted participant sampling weights for the 2003-2006 period
 ```{r}
 df_final_rw <-
   reweight_accel(
@@ -141,7 +141,7 @@ design <-
   )
 ```
 
-# Subset general design to target people with a at least 4 valid days
+# Subset general design to target people with at least 4 valid days
 ```{r}
 design_valid_pam <- 
   subset(
@@ -165,16 +165,19 @@ metric_quantiles <-
   mutate(metric = as.factor(metric) |> 
            fct_relevel("minutes_SED", "mean_breaks", "alpha", "MBD", "UBD", "gini") |>
            fct_recode(
-             "Sedentary minutes" = "minutes_SED",
-             "Mean sedentary breaks" = "mean_breaks",
+             "Mean daily sedentary minutes" = "minutes_SED",
+             "Mean daily sedentary breaks" = "mean_breaks",
              "Median bout duration (min)" = "MBD",
              "Usual bout duration (min)" = "UBD",
-             "Alpha" = "alpha", 
-             "Gini" = "gini"
+             "Power-law exponent alpha" = "alpha", 
+             "Gini index" = "gini"
              )
   )
 
+```
 
+## Show estimates
+```{r}
 metric_quantiles |> 
   rename(
     Metric = metric,
@@ -182,8 +185,9 @@ metric_quantiles |>
   )
 ```
 
+
 ## Visualize distributions
-```{r, out.width = '100%', fig.cap="Boxplots have been manually constructed from the estimates of quantiles previously computed. Whiskers show the minimum and maximum. No data is available for preschoolers"}
+```{r, out.width = '100%', fig.height=6}
 fig <-
   ggplot(data = df_final_rw |>
          pivot_longer(
@@ -194,12 +198,12 @@ fig <-
   mutate(metric = as.factor(metric) |> 
            fct_relevel("minutes_SED", "mean_breaks", "alpha", "MBD", "UBD", "gini") |>
            fct_recode(
-             "Sedentary minutes" = "minutes_SED",
-             "Mean sedentary breaks" = "mean_breaks",
+             "Mean daily sedentary minutes" = "minutes_SED",
+             "Mean daily sedentary breaks" = "mean_breaks",
              "Median bout duration (min)" = "MBD",
              "Usual bout duration (min)" = "UBD",
-             "Alpha" = "alpha", 
-             "Gini" = "gini"
+             "Power-law exponent alpha" = "alpha", 
+             "Gini index" = "gini"
              )
   )
        ) +
@@ -221,12 +225,20 @@ fig <-
       ),
   stat = "identity"
   ) +
-  labs(x = "", y = "") +
+  labs(
+    title = str_wrap("Patterns of sedentary time accumulation according to age in the United States: A 2003-2006 NHANES analysis", width  = 70), 
+    subtitle = str_wrap("As age increases, US non-institutionalized civilians become more sedentary, experience more sedentary bouts of relatively long duration, with the longest sedentary bouts getting a higher weight in total sedentary time.", width  = 90),
+    caption = str_wrap("The boxplots have been manually built from the sampling weights-based estimates of the quantiles of the metrics. The lower and upper whiskers extend up to respectively the minimum and maximum of the distribution. No data is available for preschoolers.", width = 115),
+    x = "", 
+    y = ""
+    ) +
   scale_fill_brewer(palette = palette) +
   facet_wrap(~ metric, scales = "free_y") +
   theme(
     axis.text.x = element_text(angle = 45, hjust = 1),
-    legend.position = "none"
+    legend.position = "none",
+    plot.title = element_text(face = "bold"),
+    plot.caption = element_text(hjust = 0)
   )
 fig
 ```
