@@ -167,11 +167,26 @@ list(
     name = df_paxmetrics_all_waves,
     command = dplyr::bind_rows(df_paxraw_c_all_metrics, df_paxraw_d_all_metrics)
   ),
-  # Join demographic, weight, and accelerometer metrics datasets
+  # Join demographic, weight, and accelerometer metrics datasets, and add
+  # age categories
   tar_target(
     name = df_final,
     command = list(df_demo_all_waves, df_whq_all_waves, df_paxmetrics_all_waves) |> 
-      purrr::reduce(dplyr::full_join, by = "SEQN")
-  )
+      purrr::reduce(dplyr::full_join, by = "SEQN") |> 
+      dplyr::mutate(
+        RIDAGEEX_UPDATED = if_else(is.na(RIDAGEEX), RIDAGEYR, RIDAGEEX),
+        CAT_AGE = case_when(
+          RIDAGEEX_UPDATED < 6                           ~ "Preschoolers",
+          RIDAGEEX_UPDATED >= 6 & RIDAGEEX_UPDATED < 13  ~ "Children",
+          RIDAGEEX_UPDATED >= 13 & RIDAGEEX_UPDATED < 18 ~ "Adolescents",
+          RIDAGEEX_UPDATED >= 18 & RIDAGEEX_UPDATED < 65 ~ "Adults",
+          RIDAGEEX_UPDATED >= 65                         ~ "Older adults"
+        ) |> 
+          as.factor() |> 
+          fct_relevel("Preschoolers", "Children", "Adolescents", "Adults", "Older adults")
+      )
+  ),
+  # Building the report
+  tar_render(report, "analysis.Rmd", output_dir = "out/")
 )
 
