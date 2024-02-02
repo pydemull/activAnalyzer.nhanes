@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 <!-- badges: end -->
 
-```{r, echo = FALSE, out.width = "200px"}
+```{r, echo = FALSE, out.width = "200px", fig.align="center"}
 knitr::include_graphics("img/icampam-2024-logo.jpg")
 ```
 
@@ -51,7 +51,7 @@ targets::tar_make()
 This last step will produce all the objects relating to the analytical process.
 
 
-Running the whole pipeline will take several hours (likely between 5 and 7 hours depending on the features of your machine). This is due to the high volume of data to be downloaded from the web, as well as to an important number of accelerometer data files to be processed (more than 12,000 files). Processing accelerometer data here is pretty slow, even using parallel processing, because some functions of the `{activAnalyzer}` package are pretty time consumming and cannot easily be improved as they depend on other packages. There are some packages available on the web that allow very fast analyses of NHANES accelerometer data thanks to the implementation of C++ code and a smarter structure of the data (e.g., {accelerometry}). So why the `{activAnalyzer}` package ? This is mainly due to a lack of awareness of other packages available to compute particular metrics as activity accumulation metrics, which was required for the present work.
+Running the whole pipeline will take several hours (likely between 5 and 7 hours depending on the features of your machine). This is due to the high volume of data to be downloaded from the web, as well as to an important number of accelerometer data files to be processed (more than 12,000 files). Processing accelerometer data here is pretty slow, even using parallel processing, because some functions of the `{activAnalyzer}` package are pretty time consumming and cannot easily be improved as they depend on other packages. There are some packages available on the web that allow very fast analyses of NHANES accelerometer data thanks to the implementation of C++ code and a smarter structure of the data (e.g., `{accelerometry}`). So why the `{activAnalyzer}` package ? This is mainly due to a lack of awareness of other packages available to compute particular metrics as activity accumulation metrics, which was required for the present work.
 
 
 Source of the logo: https://ismpb.org/.

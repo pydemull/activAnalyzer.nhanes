@@ -6,7 +6,7 @@
 <!-- badges: start -->
 <!-- badges: end -->
 
-<img src="img/icampam-2024-logo.jpg" width="200px" />
+<img src="img/icampam-2024-logo.jpg" width="200px" style="display: block; margin: auto;" />
 
 This repository contains the materials relating to the abstract
 submission to 2024 ICAMPAM conference. The code implements an analytical
@@ -70,7 +70,7 @@ using parallel processing, because some functions of the
 be improved as they depend on other packages. There are some packages
 available on the web that allow very fast analyses of NHANES
 accelerometer data thanks to the implementation of C++ code and a
-smarter structure of the data (e.g., {accelerometry}). So why the
+smarter structure of the data (e.g., `{accelerometry}`). So why the
 `{activAnalyzer}` package ? This is mainly due to a lack of awareness of
 other packages available to compute particular metrics as activity
 accumulation metrics, which was required for the present work.
