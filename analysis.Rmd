@@ -1,0 +1,223 @@
+---
+title: "Sedentary behaviour metrics in NHANES 2003-2006 cohort"
+author: "Pierre-Yves de Müllenheim"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    theme: cosmo
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+    number_sections: yes
+    df_print: paged
+    code_folding: show
+toc-title: "Summary"
+---
+
+```{css, echo=FALSE}
+.title {
+  font-weight: bold;
+}
+
+h1 {
+  font-size: 25px;
+  font-weight: bold;
+}
+h2 {
+  font-size: 23px;
+  font-weight: bold;
+}
+h3 {
+  font-size: 21px;
+}
+p.caption {
+  color: #777;
+  margin-top: 10px;
+}
+p code {
+  white-space: inherit;
+}
+pre {
+  word-break: normal;
+  word-wrap: normal;
+}
+pre code {
+  white-space: inherit;
+}
+```
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+ggplot2::theme_set(ggplot2::theme_bw())
+palette <- "Greens"
+```
+
+# Load packages & functions
+```{r}
+library(dplyr)
+library(forcats)
+library(ggplot2)
+library(RColorBrewer)
+library(rnhanesdata)
+library(scales)
+library(skimr)
+library(survey)
+library(targets)
+library(tidyr)
+source("R/get_adj_quantiles_by.R")
+```
+
+# Load data
+```{r}
+tar_load(df_final)
+```
+
+# Add age categories to dataset
+```{r}
+df_final <-
+  df_final |> 
+  mutate(
+    RIDAGEEX_UPDATED = if_else(is.na(RIDAGEEX), RIDAGEYR, RIDAGEEX),
+    CAT_AGE = case_when(
+      RIDAGEEX_UPDATED < 6                           ~ "Preschoolers",
+      RIDAGEEX_UPDATED >= 6 & RIDAGEEX_UPDATED < 13  ~ "Children",
+      RIDAGEEX_UPDATED >= 13 & RIDAGEEX_UPDATED < 18 ~ "Adolescents",
+      RIDAGEEX_UPDATED >= 18 & RIDAGEEX_UPDATED < 65 ~ "Adults",
+      RIDAGEEX_UPDATED >= 65                         ~ "Older adults"
+    ) |> 
+      as.factor() |> 
+      fct_relevel("Preschoolers", "Children", "Adolescents", "Adults", "Older adults")
+  )
+```
+
+# Inspect completion rate (% of people with valid measurement [>= 4 valid days])
+```{r, out.width='100%', fig.height=2}
+df_final |> 
+  group_by(CAT_AGE) |> 
+  mutate(
+    minutes_SED = if_else(valid_days >= 4, minutes_SED, NA),
+    mean_breaks = if_else(valid_days >= 4, mean_breaks, NA),
+    alpha = if_else(valid_days >= 4, alpha, NA),
+    MBD = if_else(valid_days >= 4, MBD, NA),
+    UBD = if_else(valid_days >= 4, UBD, NA),
+    gini = if_else(valid_days >= 4, gini, NA)
+    ) |> 
+  select(CAT_AGE, minutes_SED, mean_breaks:gini) |> 
+  skim() |> 
+  select(skim_variable, CAT_AGE, complete_rate) |> 
+  mutate(skim_variable = as.factor(skim_variable) |> 
+           fct_recode(
+             "Minutes SED" = "minutes_SED",
+             "Mean breaks" = "mean_breaks"
+             ) |> 
+           fct_relevel("Minutes SED", "Mean breaks", "alpha", "MBD", "UBD", "gini")
+         ) |> 
+  ggplot(aes(x = CAT_AGE, y = complete_rate * 100, fill = CAT_AGE)) +
+  geom_bar(stat = "identity") +
+  labs(x = "", y = "Completion rate") +
+  scale_y_continuous(labels = label_percent(scale = 1), limits = c(0, 100)) +
+  scale_fill_brewer(palette = palette) +
+  facet_wrap(~ skim_variable, nrow = 1) +
+  theme(
+    axis.title.y = element_text(size = 10),
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = "none"
+  )
+```
+
+# Reweight sample participants
+```{r}
+df_final_rw <-
+  reweight_accel(
+    df_final,
+    return_unadjusted_wts = TRUE,
+    age_bks = c(0, 6, 13, 18, 65, Inf),
+    right = FALSE
+  )
+```
+
+# Define design
+## Define general design
+```{r}
+design <-
+  svydesign(
+    ids = ~ SDMVPSU,
+    strata = ~ SDMVSTRA,
+    weights = ~ wtmec4yr_adj,
+    data = df_final_rw,
+    nest = TRUE
+  )
+```
+
+# Subset general design to target people with a valid measurement (>= 4 valid days)
+```{r}
+design_valid_pam <- 
+  subset(
+    x = design, 
+    subset = valid_days >= 4
+  )
+```
+
+# Quantiles for sedentary metrics by age in non-institutionalized US population
+
+## Get esimates
+```{r}
+metric_quantiles <-
+  lapply(
+    c("minutes_SED", "mean_breaks", "alpha", "MBD", "UBD", "gini"),
+    get_adj_quantiles_by,
+    by = "CAT_AGE",
+    design = design_valid_pam
+    ) |> 
+  bind_rows() |> 
+  mutate(metric = as.factor(metric) |> 
+           fct_relevel("minutes_SED", "mean_breaks", "MBD", "UBD", "alpha", "gini") |> 
+           fct_recode("Minutes SED" = "minutes_SED", "Mean breaks" = "mean_breaks")
+  )
+metric_quantiles
+```
+
+## Visualize distributions (boxplots are weighted by the sampling weights)
+```{r, out.width = '100%'}
+ggplot(data = df_final_rw |>
+         pivot_longer(
+           c(minutes_SED, mean_breaks:gini),
+           names_to = "metric",
+           values_to = "val"
+         ) |> 
+  mutate(metric = as.factor(metric) |> 
+           fct_relevel("minutes_SED", "mean_breaks", "MBD", "UBD", "alpha", "gini") |> 
+           fct_recode(
+             "Minutes SED" = "minutes_SED", 
+             "Mean breaks" = "mean_breaks"
+           )
+  )
+       ) +
+  geom_point(
+    aes(x = CAT_AGE, y = val),
+    position = position_jitter(seed = 123),
+    alpha = 0.3
+  ) +
+  geom_boxplot(
+    data = metric_quantiles,
+    aes(
+      x = CAT_AGE, 
+      fill = CAT_AGE,
+      ymin = q0,
+      lower = q25, 
+      middle = q50, 
+      upper = q75, 
+      ymax = q100
+      ),
+  stat = "identity"
+  ) +
+  labs(x = "", y = "") +
+  scale_fill_brewer(palette = palette) +
+  facet_wrap(~ metric, scales = "free_y") +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = "none"
+  )
+```
+
+

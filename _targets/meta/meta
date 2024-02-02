@@ -1,0 +1,31 @@
+name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
+activ_process_all_agd|function|a0ca3469fc76674d|||||||||||||||
+activ_process_all_nhanes|function|281c03e54b0c6ef2|||||||||||||||
+activ_process_nhanes|function|6b76e81ab984a520|||||||||||||||
+config|stem|8556756aa4a56f6b|0757d9fd7d7c645c|ef46db3751d8e999|1264390909||t19735.0135885606s|500e5c1c0ad9ad18|760|rds|local|vector|||1.65|le package activAnalyzer a été compilé avec la version R 4.3.2. le package dplyr a été compilé avec la version R 4.3.2. le package haven a été compilé avec la version R 4.3.2|
+controller|object|bd7cbaf34112f2e9|||||||||||||||
+data_dir|stem|1cd2b54c900df654|4050f99495516914|ef46db3751d8e999|-519216141||t19733.8752169298s|ac45463db19e2cbe|48|rds|local|vector|||0.25|le package haven a été compilé avec la version R 4.3.2|
+DEMO_C|stem|03602b57ad4757ef|97744335dde21e45|4b48e913f64de95f|-1123522171|data/DEMO_C.rds|t19734.3587787068s|eb23ec483adfd6c3|386626|file|local|vector|||7.99|le package haven a été compilé avec la version R 4.3.2. le package dplyr a été compilé avec la version R 4.3.2|
+DEMO_D|stem|e8c4f28c5a71c936|ffe6a291cc0c7097|4b48e913f64de95f|-1554958825|data/DEMO_D.rds|t19734.3589291069s|35512231a8903e21|391217|file|local|vector|||7.69||
+df_demo_all_waves|stem|a50c4566262b91c1|0c6688af81b07b69|a04c340741fe4d91|-2094569240||t19739.6116449612s|243575c2f5ab6f80|753091|rds|local|vector|||0||
+df_demo_c|stem|bb11305bfb37e3ec|ad14d8eff6e0fdbf|145cb462e502b0fb|2130780787||t19734.3912047729s|2f40217e6e1b0776|387399|rds|local|vector|||0.05||
+df_demo_d|stem|6ef48fb9febad669|7dd23f0ec9200108|28740c1aace00255|1082666650||t19734.3912083957s|f4ffca677b9270ed|391829|rds|local|vector|||0.04||
+df_final|stem|d329ca72135ea752|78f1f847c1ad8673|561611f382219522|1320983032||t19754.2356621799s|3dbf31c2d67f5274|2600047|rds|local|vector|||0.157||
+df_paxmetrics_all_waves|stem|750810cd8d5a006a|8536d5d73a5dff2b|6b6dcd0f30b4d177|-1372847066||t19754.2356431652s|0d3a3a390e416896|1365302|rds|local|vector|||0||
+df_paxraw_c|stem|dc84811c6564b579|1e6a499672750b36|27477ca3d4d7a39d|-1378698474||t19733.9593782415s|d43b6e3a1dfe0f71|245242186|rds|local|vector|||9.73||
+df_paxraw_c_all_metrics|stem|c41083ab6234dd7d|5658f0240bc8a3cb|7260fe32189b7778|1660598348||t19754.1348991228s|7c081618fb26e047|583230|rds|local|group|||9861.125||
+df_paxraw_c_nest|stem|1e369711e5ce861d|ddbcb45d25f0042e|dcb99f8c1ce30490|-1284462250||t19738.8638821805s|389f9a04614fd6d6|276044121|rds|local|vector|||39.875||
+df_paxraw_d|stem|2b3af645abf2657a|9aed7919fe69f8da|7930cb604961d1bd|-1078829355||t19733.9607873575s|11373c92479b45dc|291148038|rds|local|vector|||13.29||
+df_paxraw_d_all_metrics|stem|d84cf9dd2e950575|5b150d7f081aa7d5|d5f47ccaca271c93|-522668716||t19754.2354464352s|b96596273f774c74|793973|rds|local|group|||8625.781||
+df_paxraw_d_nest|stem|294988be4eb02b0b|836b1e585a3eaa50|ec78c7770ad289a1|-1204971759||t19738.8454956335s|f6abd065f9729580|331342479|rds|local|vector|||53.984||
+df_whq_all_waves|stem|c2f0fcac189f57e3|613a3c271f6ae825|0c633d9d4f92fc23|1958618527||t19739.6116396565s|e88745359be92116|250352|rds|local|vector|||0||
+df_whq_c|stem|a87fcb4bc30ec57d|852bfdd8f31f4ded|27518bc44ee5f021|-1507387282||t19734.3911985989s|13839c0785343dae|122886|rds|local|vector|||0.01||
+df_whq_d|stem|27a4d714e5f3130a|f7efba9c067d8c68|740233957d18fb2c|-216092068||t19734.3912014984s|fcd2808472f7cb24|136324|rds|local|vector|||0.03||
+get_nhanes_data|function|2bdd892e4d7df900|||||||||||||||
+PAXRAW_C|stem|dc84811c6564b579|f8b07aac60984852|4b48e913f64de95f|-316409149|data/PAXRAW_C.rds|t19734.3712842956s|d43b6e3a1dfe0f71|245242186|file|local|vector|||1060.93||
+PAXRAW_D|stem|2b3af645abf2657a|91c1f50c2213ba60|4b48e913f64de95f|8069489|data/PAXRAW_D.rds|t19734.3850686513s|11373c92479b45dc|291148038|file|local|vector|||1188.71||
+process_agd|function|07eef7a2fccf8859|||||||||||||||
+process_all_agd|function|a0ca3469fc76674d|||||||||||||||
+process_nhanes|function|047676ff402542a0|||||||||||||||
+WHQ_C|stem|1621bee636e3906c|fd516609594f148a|4b48e913f64de95f|-839759109|data/WHQ_C.rds|t19734.358838463s|5c451bf41f9d4681|121561|file|local|vector|||5.06||
+WHQ_D|stem|3dc893d66c1ea171|769d75b049aab376|4b48e913f64de95f|-1319038503|data/WHQ_D.rds|t19734.3590041311s|a0da9394632c782c|134935|file|local|vector|||6.38||
