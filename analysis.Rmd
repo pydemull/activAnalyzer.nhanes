@@ -1,5 +1,5 @@
 ---
-title: "Sedentary behaviour metrics in NHANES 2003-2006 cohort"
+title: "PATTERNS OF SEDENTARY TIME ACCUMULATION IN NON-INSTITUTIONALIZED US POPULATION: A 2003-2006 NHANES AGE-BASED ANALYSIS"
 author: "Pierre-Yves de Müllenheim"
 date: "`r Sys.Date()`"
 output: 
@@ -20,7 +20,7 @@ toc-title: "Summary"
 }
 
 h1 {
-  font-size: 25px;
+  font-size: 23px;
   font-weight: bold;
 }
 h2 {
@@ -48,6 +48,7 @@ pre code {
 
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+options(knitr.table.number = Inf)
 ggplot2::theme_set(ggplot2::theme_bw())
 palette <- "Greens"
 ```
@@ -62,36 +63,24 @@ library(rnhanesdata)
 library(scales)
 library(skimr)
 library(survey)
+library(readr)
 library(targets)
 library(tidyr)
 source("R/get_adj_quantiles_by.R")
 ```
 
-# Load data
+# Remind accelerometer processing settings
+```{r}
+read_csv2("config.csv")
+```
+
+# Load data 
 ```{r}
 tar_load(df_final)
 ```
 
-# Add age categories to dataset
-```{r}
-df_final <-
-  df_final |> 
-  mutate(
-    RIDAGEEX_UPDATED = if_else(is.na(RIDAGEEX), RIDAGEYR, RIDAGEEX),
-    CAT_AGE = case_when(
-      RIDAGEEX_UPDATED < 6                           ~ "Preschoolers",
-      RIDAGEEX_UPDATED >= 6 & RIDAGEEX_UPDATED < 13  ~ "Children",
-      RIDAGEEX_UPDATED >= 13 & RIDAGEEX_UPDATED < 18 ~ "Adolescents",
-      RIDAGEEX_UPDATED >= 18 & RIDAGEEX_UPDATED < 65 ~ "Adults",
-      RIDAGEEX_UPDATED >= 65                         ~ "Older adults"
-    ) |> 
-      as.factor() |> 
-      fct_relevel("Preschoolers", "Children", "Adolescents", "Adults", "Older adults")
-  )
-```
-
-# Inspect completion rate (% of people with valid measurement [>= 4 valid days])
-```{r, out.width='100%', fig.height=2}
+# Inspect completion rate
+```{r, out.width='100%', fig.height=5, fig.cap="No data is available for preschoolers"}
 df_final |> 
   group_by(CAT_AGE) |> 
   mutate(
@@ -106,18 +95,22 @@ df_final |>
   skim() |> 
   select(skim_variable, CAT_AGE, complete_rate) |> 
   mutate(skim_variable = as.factor(skim_variable) |> 
+           fct_relevel("minutes_SED", "mean_breaks", "alpha", "MBD", "UBD", "gini") |>
            fct_recode(
-             "Minutes SED" = "minutes_SED",
-             "Mean breaks" = "mean_breaks"
-             ) |> 
-           fct_relevel("Minutes SED", "Mean breaks", "alpha", "MBD", "UBD", "gini")
+             "Sedentary minutes" = "minutes_SED",
+             "Mean sedentary breaks" = "mean_breaks",
+             "Median bout duration (min)" = "MBD",
+             "Usual bout duration (min)" = "UBD",
+             "Alpha" = "alpha", 
+             "Gini" = "gini"
+             )
          ) |> 
   ggplot(aes(x = CAT_AGE, y = complete_rate * 100, fill = CAT_AGE)) +
   geom_bar(stat = "identity") +
   labs(x = "", y = "Completion rate") +
   scale_y_continuous(labels = label_percent(scale = 1), limits = c(0, 100)) +
   scale_fill_brewer(palette = palette) +
-  facet_wrap(~ skim_variable, nrow = 1) +
+  facet_wrap(~ skim_variable, nrow = 2) +
   theme(
     axis.title.y = element_text(size = 10),
     axis.text.x = element_text(angle = 45, hjust = 1),
@@ -130,14 +123,13 @@ df_final |>
 df_final_rw <-
   reweight_accel(
     df_final,
-    return_unadjusted_wts = TRUE,
     age_bks = c(0, 6, 13, 18, 65, Inf),
     right = FALSE
   )
 ```
 
-# Define design
-## Define general design
+# Define survey design
+## Set general design
 ```{r}
 design <-
   svydesign(
@@ -149,7 +141,7 @@ design <-
   )
 ```
 
-# Subset general design to target people with a valid measurement (>= 4 valid days)
+# Subset general design to target people with a at least 4 valid days
 ```{r}
 design_valid_pam <- 
   subset(
@@ -158,9 +150,9 @@ design_valid_pam <-
   )
 ```
 
-# Quantiles for sedentary metrics by age in non-institutionalized US population
+# Get quantiles for sedentary time accumulation metrics by age
 
-## Get esimates
+## Get estimates
 ```{r}
 metric_quantiles <-
   lapply(
@@ -171,26 +163,44 @@ metric_quantiles <-
     ) |> 
   bind_rows() |> 
   mutate(metric = as.factor(metric) |> 
-           fct_relevel("minutes_SED", "mean_breaks", "MBD", "UBD", "alpha", "gini") |> 
-           fct_recode("Minutes SED" = "minutes_SED", "Mean breaks" = "mean_breaks")
+           fct_relevel("minutes_SED", "mean_breaks", "alpha", "MBD", "UBD", "gini") |>
+           fct_recode(
+             "Sedentary minutes" = "minutes_SED",
+             "Mean sedentary breaks" = "mean_breaks",
+             "Median bout duration (min)" = "MBD",
+             "Usual bout duration (min)" = "UBD",
+             "Alpha" = "alpha", 
+             "Gini" = "gini"
+             )
   )
-metric_quantiles
+
+
+metric_quantiles |> 
+  rename(
+    Metric = metric,
+    "Age category" = CAT_AGE
+  )
 ```
 
-## Visualize distributions (boxplots are weighted by the sampling weights)
-```{r, out.width = '100%'}
-ggplot(data = df_final_rw |>
+## Visualize distributions
+```{r, out.width = '100%', fig.cap="Boxplots have been manually constructed from the estimates of quantiles previously computed. Whiskers show the minimum and maximum. No data is available for preschoolers"}
+fig <-
+  ggplot(data = df_final_rw |>
          pivot_longer(
            c(minutes_SED, mean_breaks:gini),
            names_to = "metric",
            values_to = "val"
          ) |> 
   mutate(metric = as.factor(metric) |> 
-           fct_relevel("minutes_SED", "mean_breaks", "MBD", "UBD", "alpha", "gini") |> 
+           fct_relevel("minutes_SED", "mean_breaks", "alpha", "MBD", "UBD", "gini") |>
            fct_recode(
-             "Minutes SED" = "minutes_SED", 
-             "Mean breaks" = "mean_breaks"
-           )
+             "Sedentary minutes" = "minutes_SED",
+             "Mean sedentary breaks" = "mean_breaks",
+             "Median bout duration (min)" = "MBD",
+             "Usual bout duration (min)" = "UBD",
+             "Alpha" = "alpha", 
+             "Gini" = "gini"
+             )
   )
        ) +
   geom_point(
@@ -218,6 +228,7 @@ ggplot(data = df_final_rw |>
     axis.text.x = element_text(angle = 45, hjust = 1),
     legend.position = "none"
   )
+fig
 ```
 
 
