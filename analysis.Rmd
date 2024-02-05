@@ -105,6 +105,7 @@ df_final |>
              "Gini index" = "gini"
              )
          ) |> 
+  filter(CAT_AGE != "Preschoolers") |> # There is no data for preschoolers
   ggplot(aes(x = CAT_AGE, y = complete_rate * 100, fill = CAT_AGE)) +
   geom_bar(stat = "identity") +
   labs(x = "", y = "Completion rate") +
@@ -189,7 +190,8 @@ metric_quantiles |>
 ## Visualize distributions
 ```{r, out.width = '100%', fig.height=6}
 fig <-
-  ggplot(data = df_final_rw |>
+  ggplot(data = df_final_rw |>  
+         filter(CAT_AGE != "Preschoolers") |> # There is no data for preschoolers
          pivot_longer(
            c(minutes_SED, mean_breaks:gini),
            names_to = "metric",
@@ -208,7 +210,7 @@ fig <-
   )
        ) +
   geom_point(
-    aes(x = CAT_AGE, y = val),
+    aes(x = CAT_AGE, y = val, color = CAT_AGE),
     position = position_jitter(seed = 123),
     alpha = 0.3
   ) +
@@ -217,22 +219,23 @@ fig <-
     aes(
       x = CAT_AGE, 
       fill = CAT_AGE,
-      ymin = q0,
+      ymin = q25 - 1.5 * (q75 - q25),
       lower = q25, 
       middle = q50, 
       upper = q75, 
-      ymax = q100
+      ymax = q75 + 1.5 * (q75 - q25)
       ),
   stat = "identity"
   ) +
   labs(
     title = str_wrap("Patterns of sedentary time accumulation according to age in the United States: A 2003-2006 NHANES analysis", width  = 70), 
     subtitle = str_wrap("As age increases, US non-institutionalized civilians become more sedentary, experience more sedentary bouts of relatively long duration, with the longest sedentary bouts getting a higher weight in total sedentary time.", width  = 90),
-    caption = str_wrap("The boxplots have been manually built from the sampling weights-based estimates of the quantiles of the metrics. The lower and upper whiskers extend up to respectively the minimum and maximum of the distribution. No data is available for preschoolers.", width = 115),
+    caption = str_wrap("Children = from 6 to 12 yr; Adolescents = from 13 to 17 yr; Adults = from 18 to 64 yr; Older adults = 65 yr and above. The boxplots have been manually built from the sampling weights-based estimates of the quantiles of the metrics. The lower and upper whiskers extend up to the 1.5 times the interquartile range beyond the box hinges respectively. No data was available for preschoolers.", width = 113),
     x = "", 
     y = ""
     ) +
   scale_fill_brewer(palette = palette) +
+  scale_color_brewer(palette = palette) +
   facet_wrap(~ metric, scales = "free_y") +
   theme(
     axis.text.x = element_text(angle = 45, hjust = 1),
@@ -243,4 +246,7 @@ fig <-
 fig
 ```
 
+```{r, echo = FALSE}
+ggsave("out/fig.tiff", fig, width = 7, height = 7)
+```
 
