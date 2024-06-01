@@ -3,11 +3,7 @@ activ_process_all_nhanes <- function(
     datasets,
     config,
     demo, 
-    whq,
-    content = c("option_1", "option_2", "option_3"),
-    out_dir = "./data",
-    out_folder = "PAXRAW_RESULTS",
-    export_results = FALSE
+    whq
     ) {
 
 # Define clusters

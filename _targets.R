@@ -20,95 +20,65 @@ tar_option_set(
   garbage_collection = TRUE
 )
 
-# Run the R scripts in the R/ folder
+# Run the R scripts from the R/ folder
 tar_source()
 
 # Define pipeline
 list(
-  # Create data directory
-  tar_target(
-    name = data_dir,
-    command = dir.create("./data")
-  ),
-  # Download demographic data for wave 2003-2004
-  tar_target(
-    name = DEMO_C,
-    command = get_nhanes_data(code = "DEMO", wave = "C"),
-    format = "file"
-  ),
-  # Download demographic data for wave 2005-2006
-  tar_target(
-    name = DEMO_D,
-    command = get_nhanes_data(code = "DEMO", wave = "D"),
-    format = "file",
-  ),
-  # Download weight data for wave 2003-2004
-  tar_target(
-    name = WHQ_C,
-    command = get_nhanes_data(code = "WHQ", wave = "C"),
-    format = "file"
-  ),
-  # Download weight data for wave 2005-2006
-  tar_target(
-    name = WHQ_D,
-    command = get_nhanes_data(code = "WHQ", wave = "D"),
-    format = "file"
-  ),
-  # Download accelerometer data for wave 2003-2004 (takes several minutes)
-  tar_target(
-    name = PAXRAW_C,
-    command = get_nhanes_data(code = "PAXRAW", wave = "C"),
-    format = "file"
-  ),
-  # Download accelerometer data for wave 2005-2006 (takes several minutes)
-  tar_target(
-    name = PAXRAW_D,
-    command = get_nhanes_data(code = "PAXRAW", wave = "D"),
-    format = "file"
-  ),
-  # Import demographic data for wave 2003-2004 
-  #   Convert age from months to years
-  #   Recode Gender variable
+  # Get demographic data for wave 2003-2004
   tar_target(
     name = df_demo_c,
-    command = readRDS(DEMO_C) |> 
-      dplyr::mutate(
-        RIDAGEEX = RIDAGEEX / 12,
-        RIAGENDR = fct_recode(as.factor(RIAGENDR), "male" = "1", "female" = "2")
-        )
-  ),
-  # Import demographic data for wave 2005-2006  
-  #   Convert age from months to years
-  #   Recode Gender variable
-  tar_target(
-    name = df_demo_d,
-    command = readRDS(DEMO_D) |> 
+    command = haven::read_xpt("https://wwwn.cdc.gov/Nchs/Nhanes/2003-2004/DEMO_C.xpt") |> 
       dplyr::mutate(
         RIDAGEEX = RIDAGEEX / 12,
         RIAGENDR = fct_recode(as.factor(RIAGENDR), "male" = "1", "female" = "2")
       )
   ),
-  # Import weight data for wave 2003-2004 | Convert weight from pounds to kg
+  # Get demographic data for wave 2005-2006
+  tar_target(
+    name = df_demo_d,
+    command = haven::read_xpt("https://wwwn.cdc.gov/Nchs/Nhanes/2005-2006/DEMO_D.xpt") |> 
+      dplyr::mutate(
+        RIDAGEEX = RIDAGEEX / 12,
+        RIAGENDR = fct_recode(as.factor(RIAGENDR), "male" = "1", "female" = "2")
+      )
+  ),
+  # Get weight data for wave 2003-2004 | Convert weight from pounds to kg
   tar_target(
     name = df_whq_c,
-    command = readRDS(WHQ_C) |> 
+    command = haven::read_xpt("https://wwwn.cdc.gov/Nchs/Nhanes/2003-2004/WHQ_C.xpt") |> 
       dplyr::mutate(WHD020 = dplyr::if_else(WHD020 %in% c(7777, 9999), NA, WHD020 / 2.2046))
   ),
-  # Import weight data for wave 2005-2006 | Convert weight from pounds to kg
+  # Get weight data for wave 2005-2006 | Convert weight from pounds to kg
   tar_target(
     name = df_whq_d,
-    command = readRDS(WHQ_D) |> 
+    command = haven::read_xpt("https://wwwn.cdc.gov/Nchs/Nhanes/2005-2006/WHQ_D.xpt") |> 
       dplyr::mutate(WHD020 = dplyr::if_else(WHD020 %in% c(7777, 9999), NA, WHD020 / 2.2046))
   ),
-  # Import accelerometer data for wave 2003-2004 (takes minutes)
+  # Get accelerometer data for wave 2003-2004 (takes several minutes)
   tar_target(
     name = df_paxraw_c,
-    command = readRDS(PAXRAW_C),
+    command = 
+     { 
+       options(timeout = max(2000, getOption("timeout")))
+       temp <- tempfile()
+       download.file("https://wwwn.cdc.gov/Nchs/Nhanes/2003-2004//PAXRAW_C.zip", temp)
+       data <- haven::read_xpt(unz(temp, "paxraw_c.xpt"))
+       unlink(temp)
+       return(data)
+    }
   ),
-  # Import accelerometer data for wave 2005-2006 (takes minutes)
+  # Get accelerometer data for wave 2005-2006 (takes several minutes)
   tar_target(
     name = df_paxraw_d,
-    command = readRDS(PAXRAW_D)
+    { 
+      options(timeout = max(2000, getOption("timeout")))
+      temp <- tempfile()
+      download.file("https://wwwn.cdc.gov/Nchs/Nhanes/2005-2006//PAXRAW_D.zip", temp)
+      data <- haven::read_xpt(unz(temp, "paxraw_d.xpt"))
+      unlink(temp)
+      return(data)
+    }
   ),
   # Nest accelerometer datasets
   tar_target(
