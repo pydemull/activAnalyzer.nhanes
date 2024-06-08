@@ -150,47 +150,71 @@ activ_process_nhanes <- function(
   
   # Set function parameters
   
-      # Axis
+     # Axis
      if (age < 6)                {axis <- axis_preschooler}
      if (age >= 6 && age < 13)   {axis <- axis_child}
      if (age >= 13 && age < 18)  {axis <- axis_adolescent}
      if (age >= 18 && age < 65)  {axis <- axis_adult}
      if (age >= 65)              {axis <- axis_older}
   
-      # SED cut-point
+     # SED cut-point
      if (age < 6)                {sed_cutpoint <- sed_cutpoint_preschooler}
      if (age >= 6 && age < 13)   {sed_cutpoint <- sed_cutpoint_child}
      if (age >= 13 && age < 18)  {sed_cutpoint <- sed_cutpoint_adolescent}
      if (age >= 18 && age < 65)  {sed_cutpoint <- sed_cutpoint_adult}
      if (age >= 65)              {sed_cutpoint <- sed_cutpoint_older}
 
-      # MPA cut-point
-      if (age < 6)                {mpa_cutpoint <- mpa_cutpoint_preschooler}
-      if (age >= 6 && age < 13)   {mpa_cutpoint <- mpa_cutpoint_child}
-      if (age >= 13 && age < 18)  {mpa_cutpoint <- mpa_cutpoint_adolescent}
-      if (age >= 18 && age < 65)  {mpa_cutpoint <- mpa_cutpoint_adult}
-      if (age >= 65)              {mpa_cutpoint <- mpa_cutpoint_older}
+     # MPA cut-point (the settings initially provided in the config.csv file 
+     # (that was not specifically built for NHANES analysis) are overridden to keep
+     # consistency with the Troiano et al. paper (2008; DOI: 10.1249/mss.0b013e31815a51b3). 
+     # The following settings are from ActiGraph website (https://actigraphcorp.my.site.com/support/s/article/What-s-the-difference-among-the-Cut-Points-available-in-ActiLife):
+     if (age < 6)               {mpa_cutpoint <- 1400}
+     if (age >= 6 && age < 7)   {mpa_cutpoint <- 1400}
+     if (age >= 7 && age < 8)   {mpa_cutpoint <- 1515}
+     if (age >= 8 && age < 9)   {mpa_cutpoint <- 1638}
+     if (age >= 9 && age < 10)  {mpa_cutpoint <- 1770}
+     if (age >= 10 && age < 11) {mpa_cutpoint <- 1910}
+     if (age >= 11 && age < 12) {mpa_cutpoint <- 2059}
+     if (age >= 12 && age < 13) {mpa_cutpoint <- 2220}
+     if (age >= 13 && age < 14) {mpa_cutpoint <- 2393}
+     if (age >= 14 && age < 15) {mpa_cutpoint <- 2580}
+     if (age >= 15 && age < 16) {mpa_cutpoint <- 2781}
+     if (age >= 16 && age < 17) {mpa_cutpoint <- 3000}
+     if (age >= 17 && age < 18) {mpa_cutpoint <- 3239}
+     if (age >= 18)             {mpa_cutpoint <- 2020}
       
-      # VPA cut-point
-      if (age < 6)                {vpa_cutpoint <- vpa_cutpoint_preschooler}
-      if (age >= 6 && age < 13)   {vpa_cutpoint <- vpa_cutpoint_child}
-      if (age >= 13 && age < 18)  {vpa_cutpoint <- vpa_cutpoint_adolescent}
-      if (age >= 18 && age < 65)  {vpa_cutpoint <- vpa_cutpoint_adult}
-      if (age >= 65)              {vpa_cutpoint <- vpa_cutpoint_older}
-  
-      # Equation for estimating energy expenditure
-      if (age < 6)                {equation <- equation_ee_preschooler}
-      if (age >= 6 && age < 13)   {equation <- equation_ee_child}
-      if (age >= 13 && age < 18)  {equation <- equation_ee_adolescent}
-      if (age >= 18 && age < 65)  {equation <- equation_ee_adult}
-      if (age >= 65)              {equation <- equation_ee_older}
+     # VPA cut-point (the settings initially provided in the config.csv file 
+     # (that was not specifically built for NHANES analysis) are overridden to keep
+     # consistency with the Troiano et al. paper (2008; DOI: 10.1249/mss.0b013e31815a51b3). 
+     # The following settings are from ActiGraph website (https://actigraphcorp.my.site.com/support/s/article/What-s-the-difference-among-the-Cut-Points-available-in-ActiLife):
+     if (age < 6)               {vpa_cutpoint <- 3758}
+     if (age >= 6 && age < 7)   {vpa_cutpoint <- 3758}
+     if (age >= 7 && age < 8)   {vpa_cutpoint <- 3947}
+     if (age >= 8 && age < 9)   {vpa_cutpoint <- 4147}
+     if (age >= 9 && age < 10)  {vpa_cutpoint <- 4360}
+     if (age >= 10 && age < 11) {vpa_cutpoint <- 4588}
+     if (age >= 11 && age < 12) {vpa_cutpoint <- 4832}
+     if (age >= 12 && age < 13) {vpa_cutpoint <- 5094}
+     if (age >= 13 && age < 14) {vpa_cutpoint <- 5375}
+     if (age >= 14 && age < 15) {vpa_cutpoint <- 5679}
+     if (age >= 15 && age < 16) {vpa_cutpoint <- 6007}
+     if (age >= 16 && age < 17) {vpa_cutpoint <- 6363}
+     if (age >= 17 && age < 18) {vpa_cutpoint <- 6751}
+     if (age >= 18)             {vpa_cutpoint <- 5999}
 
-      # Epoch target
-      if (age < 6)                {epoch_target <- epoch_target_preschooler}
-      if (age >= 6 && age < 13)   {epoch_target <- epoch_target_child}
-      if (age >= 13 && age < 18)  {epoch_target <- epoch_target_adolescent}
-      if (age >= 18 && age < 65)  {epoch_target <- epoch_target_adult}
-      if (age >= 65)              {epoch_target <- epoch_target_older}
+     # Equation for estimating energy expenditure
+     if (age < 6)                {equation <- equation_ee_preschooler}
+     if (age >= 6 && age < 13)   {equation <- equation_ee_child}
+     if (age >= 13 && age < 18)  {equation <- equation_ee_adolescent}
+     if (age >= 18 && age < 65)  {equation <- equation_ee_adult}
+     if (age >= 65)              {equation <- equation_ee_older}
+
+     # Epoch target
+     if (age < 6)                {epoch_target <- epoch_target_preschooler}
+     if (age >= 6 && age < 13)   {epoch_target <- epoch_target_child}
+     if (age >= 13 && age < 18)  {epoch_target <- epoch_target_adolescent}
+     if (age >= 18 && age < 65)  {epoch_target <- epoch_target_adult}
+     if (age >= 65)              {epoch_target <- epoch_target_older}
   
      # Frame (wear time)
      if (age < 6)                {frame <- frame_preschooler}
@@ -199,22 +223,22 @@ activ_process_nhanes <- function(
      if (age >= 18 && age < 65)  {frame <- frame_adult}
      if (age >= 65)              {frame <- frame_older}
   
-      # Allowance Frame (wear time)
-      if (age < 6)                {allowanceFrame <- allowanceFrame_preschooler}
-      if (age >= 6 && age < 13)   {allowanceFrame <- allowanceFrame_child}
-      if (age >= 13 && age < 18)  {allowanceFrame <- allowanceFrame_adolescent}
-      if (age >= 18 && age < 65)  {allowanceFrame <- allowanceFrame_adult}
-      if (age >= 65)              {allowanceFrame <- allowanceFrame_older}
+     # Allowance Frame (wear time)
+     if (age < 6)                {allowanceFrame <- allowanceFrame_preschooler}
+     if (age >= 6 && age < 13)   {allowanceFrame <- allowanceFrame_child}
+     if (age >= 13 && age < 18)  {allowanceFrame <- allowanceFrame_adolescent}
+     if (age >= 18 && age < 65)  {allowanceFrame <- allowanceFrame_adult}
+     if (age >= 65)              {allowanceFrame <- allowanceFrame_older}
   
-      # Stream Frame (wear time)
-      if (age < 6)                {streamFrame <- streamFrame_preschooler}
-      if (age >= 6 && age < 13)   {streamFrame <- streamFrame_child}
-      if (age >= 13 && age < 18)  {streamFrame <- streamFrame_adolescent}
-      if (age >= 18 && age < 65)  {streamFrame <- streamFrame_adult}
-      if (age >= 65)              {streamFrame <- streamFrame_older}
+     # Stream Frame (wear time)
+     if (age < 6)                {streamFrame <- streamFrame_preschooler}
+     if (age >= 6 && age < 13)   {streamFrame <- streamFrame_child}
+     if (age >= 13 && age < 18)  {streamFrame <- streamFrame_adolescent}
+     if (age >= 18 && age < 65)  {streamFrame <- streamFrame_adult}
+     if (age >= 65)              {streamFrame <- streamFrame_older}
     
   
-  # Set columns names for wave 2003-2004
+  # Set column names for wave 2003-2004
   if (as.numeric(id) <= 31125) {
     names(data)[8] <- "axis1"
     data$steps <- NA # no step data is provided for the wave 2003-2004
