@@ -71,12 +71,11 @@ library(stringr)
 library(survey)
 library(targets)
 library(tidyr)
-source("R/get_adj_quantiles_by.R")
 ```
 
 # Load data 
 ```{r}
-tar_load(df_final)
+withr::with_dir(rprojroot::find_root('_targets.R'),tar_load(df_final))
 ```
 
 # Inspect completion rate
@@ -247,6 +246,6 @@ fig
 ```
 
 ```{r, echo = FALSE}
-ggsave("out/fig.tiff", fig, width = 7, height = 7)
+ggsave("icampam/fig.tiff", fig, width = 7, height = 7)
 ```
 
