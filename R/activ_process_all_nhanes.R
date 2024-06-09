@@ -3,7 +3,7 @@ activ_process_all_nhanes <- function(
     datasets,
     config,
     demo, 
-    whq
+    bmx
     ) {
 
 # Define clusters
@@ -17,7 +17,7 @@ results <-
     activ_process_nhanes, 
     config = config, 
     demo = demo, 
-    whq = whq
+    bmx = bmx
   )
 
 # Close clusters

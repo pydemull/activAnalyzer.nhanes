@@ -34,6 +34,7 @@ plot_adj_quantiles <- function(metric, data, metrics_quantiles) {
       x = "", 
     ) +
     scale_x_discrete(limits = rev) +
+    theme_bw() +
     theme(
       plot.title = element_text(face = "bold"),
       plot.caption = element_text(hjust = 0)

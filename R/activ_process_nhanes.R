@@ -3,7 +3,7 @@ activ_process_nhanes <- function(
     data, 
     config,
     demo, 
-    whq
+    bmx
     ){
   
   # Analyse dataset only if it is OK for both reliability and calibration
@@ -83,7 +83,7 @@ activ_process_nhanes <- function(
   # Set parameters
   age    <- demo[demo[ID] == id, AGE][[1]]
   sex    <- as.character(demo[demo[ID] == id, SEX][[1]])
-  weight <- whq[whq[ID] == id, WEIGHT][[1]]
+  weight <- bmx[bmx[ID] == id, WEIGHT][[1]]
   
      ## Manage problematic parameters
      if (is.na(age)) {age <- demo[demo[ID] == id, "RIDAGEYR"][[1]]}

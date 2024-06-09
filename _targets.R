@@ -53,17 +53,15 @@ list(
         RIAGENDR = fct_recode(as.factor(RIAGENDR), "male" = "1", "female" = "2")
       )
   ),
-  # Download weight data for wave 2003-2004 & Convert weight from pounds to kg
+  # Download anthropometric data for wave 2003-2004
   tar_target(
-    name = df_whq_c,
-    command = read_xpt("https://wwwn.cdc.gov/Nchs/Nhanes/2003-2004/WHQ_C.xpt") |> 
-      mutate(WHD020 = if_else(WHD020 %in% c(7777, 9999), NA, WHD020 / 2.2046))
+    name = df_bmx_c,
+    command = read_xpt("https://wwwn.cdc.gov/Nchs/Nhanes/2003-2004/BMX_C.xpt")
   ),
-  # Download weight data for wave 2005-2006 & Convert weight from pounds to kg
+  # Download anthropometric data for wave 2005-2006
   tar_target(
-    name = df_whq_d,
-    command = read_xpt("https://wwwn.cdc.gov/Nchs/Nhanes/2005-2006/WHQ_D.xpt") |> 
-      mutate(WHD020 = if_else(WHD020 %in% c(7777, 9999), NA, WHD020 / 2.2046))
+    name = df_bmx_d,
+    command = read_xpt("https://wwwn.cdc.gov/Nchs/Nhanes/2005-2006/BMX_D.xpt")
   ),
   # Download accelerometer data for wave 2003-2004 (takes several minutes)
   tar_target(
@@ -119,7 +117,7 @@ list(
       datasets = df_paxraw_c_nest,
       config = config, 
       demo = df_demo_c, 
-      whq = df_whq_c
+      bmx = df_bmx_c
     ),
     size = 100
   ),
@@ -130,7 +128,7 @@ list(
       datasets = df_paxraw_d_nest,
       config = config, 
       demo = df_demo_d, 
-      whq = df_whq_d
+      bmx = df_bmx_d
     ),
     size = 100
   ),
@@ -139,10 +137,10 @@ list(
     name = df_demo_all_waves,
     command = bind_rows(df_demo_c, df_demo_d)
     ),
-  # Bind weight data from both waves
+  # Bind anthropometric data from both waves
   tar_target(
-    name = df_whq_all_waves,
-    command = bind_rows(df_whq_c, df_whq_d)
+    name = df_bmx_all_waves,
+    command = bind_rows(df_bmx_c, df_bmx_d)
   ),
   # Bind accelerometer results from both waves
   tar_target(
@@ -155,11 +153,11 @@ list(
       # (these metrics were computed by default with the {activAnalyzer} package):
       select(-c(total_steps, max_steps_60min:peak_steps_1min))
   ),
-  # Join demographic, weight, and accelerometer metrics datasets, and add
+  # Join demographic, anthropometric, and accelerometer metrics datasets, and add
   # age categories
   tar_target(
     name = df_final,
-    command = list(df_demo_all_waves, df_whq_all_waves, df_paxmetrics_all_waves) |> 
+    command = list(df_demo_all_waves, df_bmx_all_waves, df_paxmetrics_all_waves) |> 
       reduce(full_join, by = "SEQN") |> 
       rename(M1_3 = "M1/3") |>  # change name because it is problematic for the svyby() function
       mutate(
@@ -374,12 +372,36 @@ list(
       wrap_plots(plots_quantiles[-c(3, 21:25)], ncol = 3) +
       plot_layout(axes = 'collect') + plot_annotation(tag_levels = 'A')
   ),
+  # Save figure for physical activity metrics
+  tar_target(
+    name = fig_pa_tiff,
+    command = ggsave(
+      "paper/fig_pa.tiff",
+      fig_pa,
+      scaling = 0.5,
+      height = 10,
+      width = 5
+    ),
+    format = "file"
+  ),  
   # Build figure for sedentary behaviour metrics
   tar_target(
     name = fig_sed,
     command = 
       wrap_plots(plots_quantiles[c(3, 21:25)], ncol = 3) +
       plot_layout(axes = 'collect') + plot_annotation(tag_levels = 'A')
+  ),
+  # Save figure for sedentary behaviour metrics
+  tar_target(
+    name = fig_sed_tiff,
+    command = ggsave(
+      "paper/fig_sed.tiff",
+      fig_sed,
+      scaling = 0.6,
+      height = 5,
+      width = 7
+    ),
+    format = "file"
   ),
   # Build the report for ICAMPAM absract
   tar_render(report, "icampam/analysis.Rmd", output_dir = "icampam/"),

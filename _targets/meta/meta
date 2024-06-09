@@ -1,5 +1,5 @@
 name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
-.Random.seed|object|179667d246e8a5d6|||||||||||||||
+.Random.seed|object|b1b8af26d8dce0cc|||||||||||||||
 activ_process_all_nhanes|function|638a4359fc6e9ded|||||||||||||||
 activ_process_nhanes|function|2efaeb009c5c0f23|||||||||||||||
 config|stem|1b35b43de9950078|8f8fa9e4b259067b|ef46db3751d8e999|-1931060652||t19882.344563361s|500e5c1c0ad9ad18|760|rds|local|vector|||0.813||
@@ -22,8 +22,10 @@ df_paxraw_d_nest|stem|13126248bb69edd0|2a54633c7439fd59|063bdbd8d6c2466c|-155313
 df_whq_all_waves|stem|24fc2812b2a3e13b|e09140e69e97392a|f074c6d3bbf52d2c|1452990631||t19882.3483067623s|e88745359be92116|250352|rds|local|vector|||0.015||
 df_whq_c|stem|d7e5a3837c361c1a|d97ff4215ec46fef|ef46db3751d8e999|-1564955179||t19882.3444732125s|13839c0785343dae|122886|rds|local|vector|||5.375||
 df_whq_d|stem|68686507f1727d14|b1fbc100832c6d72|ef46db3751d8e999|-368912306||t19882.3445515692s|fcd2808472f7cb24|136324|rds|local|vector|||6.531||
-fig_pa|stem|a415ff62280bf468|1880358cff3ab8c7|520443af64171595|127828660||t19882.9000687392s|c213958021435a94|133622847|rds|local|vector|||0.297||
-fig_sed|stem|1382d98232cd1142|39727abbbe7ff166|520443af64171595|814175120||t19882.9004700982s|0fecc0d80821f0c3|42318446|rds|local|vector|||0.016||
+fig_pa|stem|9b733c139056be3e|1880358cff3ab8c7|e065bd28b538475a|127828660||t19883.2360639018s|a0fda794ecb0d823|133701846|rds|local|vector|||0.031||
+fig_pa_tiff|stem|789d4278ada581c8|5b34f235f7d2953c|e5e8de0c98720bd0|436061115|paper/fig_pa.tiff|t19883.2378542171s|5d74ccdebeb5f658|13500204|file|local|vector|||9.985|Removed 19 rows containing missing values or values outside the scale rangegeom_dotsinterval.|
+fig_sed|stem|f4a768153097763f|39727abbbe7ff166|e065bd28b538475a|814175120||t19883.2355625674s|ddf233af812078af|42342255|rds|local|vector|||0.015||
+fig_sed_tiff|stem|dddda61e58540e62|add23701d336dc40|7135fb657e6f70d1|2007279688|paper/fig_sed.tiff|t19883.2361872876s|44114852bc8db8ef|9450204|file|local|vector|||6.969||
 format_tab_quantiles|function|e0567aea24288879|||||||||||||||
 get_adj_quantiles_by|function|9ef28b892da42257|||||||||||||||
 get_nhanes_data|function|2bdd892e4d7df900|||||||||||||||
@@ -36,9 +38,9 @@ n_nhanes_paxraw_c|stem|590db334a5ceecf9|26aee922c7745a96|ed5bbdfd983d89ab|-66204
 n_nhanes_paxraw_d|stem|0323f2ced1d2c9f1|24417ce95eb7f234|063bdbd8d6c2466c|-918940484||t19880.8439957222s|b6d2e014b07bc296|51|rds|local|vector|||8.453||
 n_paxraw_valid|stem|8b4a3a23e961c59a|783f3340cf29b2d2|141361fd22289f66|-1468901763||t19882.8093355305s|b6d2e014b07bc296|51|rds|local|vector|||0||
 p_sed|stem|e2deef4f4b8dcef1|27509757512bdeed|ad7dfcd99985e552|1720730250||t19882.3918147856s|e851c256b2959039|421617372|rds|local|vector|||1.672||
-paper|stem|1be43d85bf775ca2|a5a6be46f1854f06|db9cf3e93d620e27|-1607195735|paper/manuscript.docx*paper/manuscript.html*paper/manuscript.qmd|t19882.9024212022s|461385b2adae27e5|199564|file|local|vector|||121.906||
-plot_adj_quantiles|function|b1f6159d0294041f|||||||||||||||
-plots_quantiles|stem|f90c4d2f703a5f2e|8680773b567dbd4b|ea368397e3428dca|-344273798||t19882.8993187962s|46e7c377355500c9|175673780|rds|local|vector|||1.735||
+paper|stem|5789d95d14265c49|a5a6be46f1854f06|4362da98694da8df|-1607195735|paper/manuscript.docx*paper/manuscript.html*paper/manuscript.qmd|t19883.2375884059s|d5cd452aaf098e2c|198237|file|local|vector|||108.609||
+plot_adj_quantiles|function|ae1db532f719b5da|||||||||||||||
+plots_quantiles|stem|e6db59902ea80346|8680773b567dbd4b|28752b359e46b7de|-344273798||t19883.2353238162s|6caad14bb8e70c32|175785250|rds|local|vector|||1.641||
 report|stem|549603a09d3c12ca|2bc0ed337ca0437d|1e6d4c8b7c3b1ba8|787668912|icampam/analysis.html*icampam/analysis.Rmd|t19881.3485424672s|df34702ec6ca21fc|1470848|file|local|vector|||17.985||
 tab_pa_metrics|stem|25be3b694b65026d|2bd1470fab6c73c6|d7d8b8ee60ddb28f|711956597||t19882.5490224296s|f4536f0187b73a09|12516|rds|local|vector|||0.204||
 tab_sed_metrics|stem|3d62b95e723458cb|5c97920bb47e51f3|d7d8b8ee60ddb28f|-1654456427||t19882.5490266969s|2fab14f2569e80f4|6573|rds|local|vector|||0.11||
