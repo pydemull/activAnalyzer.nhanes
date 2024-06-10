@@ -11,7 +11,7 @@
 
 <meta name="author" content="Pierre-Yves de Müllenheim" />
 
-<meta name="date" content="2024-06-07" />
+<meta name="date" content="2024-06-10" />
 
 <title>Patterns of sedentary time accumulation according to age in the United States: A 2003-2006 NHANES analysis</title>
 
@@ -2860,7 +2860,7 @@ border-radius: 0px;
 <h1 class="title toc-ignore">Patterns of sedentary time accumulation
 according to age in the United States: A 2003-2006 NHANES analysis</h1>
 <h4 class="author">Pierre-Yves de Müllenheim</h4>
-<h4 class="date">2024-06-07</h4>
+<h4 class="date">2024-06-10</h4>
 
 </div>
 
@@ -3008,7 +3008,7 @@ sedentary time accumulation metrics by age</h1>
     design = design_valid_pam
     ) |&gt; 
   bind_rows() |&gt; 
-  mutate(metric = as.factor(metric) |&gt; 
+  mutate(var = as.factor(var) |&gt; 
            fct_relevel(&quot;minutes_SED&quot;, &quot;mean_breaks&quot;, &quot;alpha&quot;, &quot;MBD&quot;, &quot;UBD&quot;, &quot;gini&quot;) |&gt;
            fct_recode(
              &quot;Mean daily sedentary minutes&quot; = &quot;minutes_SED&quot;,
@@ -3024,7 +3024,7 @@ sedentary time accumulation metrics by age</h1>
 <h2><span class="header-section-number">7.2</span> Show estimates</h2>
 <pre class="r"><code>metric_quantiles |&gt; 
   rename(
-    Metric = metric,
+    Metric = var,
     &quot;Age category&quot; = CAT_AGE
   )</code></pre>
 <div data-pagedtable="false">
@@ -3062,7 +3062,7 @@ distributions</h2>
     alpha = 0.3
   ) +
   geom_boxplot(
-    data = metric_quantiles,
+    data = metric_quantiles |&gt; rename(metric = var),
     aes(
       x = CAT_AGE, 
       fill = CAT_AGE,

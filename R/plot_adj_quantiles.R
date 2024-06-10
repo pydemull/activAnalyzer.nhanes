@@ -1,12 +1,12 @@
-plot_adj_quantiles <- function(metric, data, metrics_quantiles) {
+plot_adj_quantiles <- function(var, data, vars_quantiles) {
   
   p <-
     data |>
     filter(CAT_AGE != "Preschoolers") |> # There is no data for preschoolers
     ggplot(aes(x = CAT_AGE)) +
-    geom_dots(aes(y = .data[[metric]]), side = "right", color = "grey80") +
+    geom_dots(aes(y = .data[[var]]), side = "right", color = "grey80") +
     geom_boxplot(
-      data = metrics_quantiles |> filter(metric == {{ metric }}),
+      data = vars_quantiles |> filter(var == {{ var }}),
       aes(
         ymin = q25,
         lower = q25, 
@@ -20,7 +20,7 @@ plot_adj_quantiles <- function(metric, data, metrics_quantiles) {
       linewidth = 0.3
     ) +
     geom_errorbar(
-      data = metrics_quantiles |> filter(metric == {{ metric }}),
+      data = vars_quantiles |> filter(var == {{ var }}),
       aes(
         x = stage(start = CAT_AGE, after_scale(x - 0.15)), 
         ymin = q50_ci_l, 
