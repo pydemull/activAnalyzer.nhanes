@@ -110,7 +110,7 @@ list(
     name = config,
     command = read_csv2("config.csv")
   ),
-  # Process accelerometer data relating to wave 2003-2004 (takes several hours)
+  # Process accelerometer data related to wave 2003-2004 (takes several hours)
   tar_group_size(
     name = df_paxraw_c_all_metrics,
     command = activ_process_all_nhanes(
@@ -121,7 +121,7 @@ list(
     ),
     size = 100
   ),
-  # Process accelerometer data relating to wave 2005-2006 (takes several hours)
+  # Process accelerometer data related to wave 2005-2006 (takes several hours)
   tar_group_size(
     name = df_paxraw_d_all_metrics,
     command = activ_process_all_nhanes(
@@ -257,7 +257,7 @@ list(
       ) |>
       bind_rows() |>
       mutate(
-        metric = as.factor(metric) |>
+        var = as.factor(var) |>
           fct_relevel(metrics_list) |>
           fct_recode(
             "Total vertical counts" = "total_counts_axis1",
@@ -283,13 +283,13 @@ list(
           )
       )
   ), 
-  # Build table for physical activity metrics
+  # Build table for physical activity volume metrics
   tar_target(
-    name = tab_pa_metrics,
+    name = tab_pa_vol_metrics,
     command = 
       metrics_quantiles |>
       filter(
-        metric %in% c(
+        var %in% c(
           "Total vertical counts",
           "Vertical axis CPM",
           "LPA time (min)",
@@ -300,15 +300,28 @@ list(
           "% Wear time MPA",
           "% Wear time VPA",
           "% Wear time MVPA",
-          "MVPA / Sedentary time ratio",
+          "MVPA / Sedentary time ratio"
+        )
+      ) |> 
+      format_tab_quantiles(col_var_name = "Metric")
+  ),
+  # Build table for physical activity intensity distribution metrics
+  tar_target(
+    name = tab_pa_int_distri_metrics,
+    command = 
+      metrics_quantiles |>
+      filter(
+        var %in% c(
+          "Intensity gradient",
           "M1/3",
+          "M120",
           "M60",
           "M30",
           "M15",
           "M5"
         )
       ) |> 
-      format_tab_quantiles()
+      format_tab_quantiles(col_var_name = "Metric")
   ),
   # Build table for sedentary behaviour metrics
   tar_target(
@@ -316,7 +329,7 @@ list(
     command = 
       metrics_quantiles |>
       filter(
-        metric %in% c(
+        var %in% c(
           "Sedentary time (min)",
           "Sedentary breaks",
           "Median bout duration (min)",
@@ -325,7 +338,7 @@ list(
           "Gini index"
         )
       ) |> 
-      format_tab_quantiles()
+      format_tab_quantiles(col_var_name = "Metric")
   ),
   # Build plots showing individual data points along with the quantile estimates
   tar_target(
@@ -362,28 +375,47 @@ list(
           metrics_list <- df_final_4_valid_days_renamed |> select(`Total vertical counts`:`Gini index`) |> names()
           
           # Get plots
-          lapply(metrics_list, plot_adj_quantiles, data = df_final_4_valid_days_renamed, metrics_quantiles = metrics_quantiles)
+          lapply(metrics_list, plot_adj_quantiles, data = df_final_4_valid_days_renamed, vars_quantiles = metrics_quantiles)
         }
     ), 
-  # Build figure for physical activity metrics
+  # Build figure for physical activity volume metrics
   tar_target(
-    name = fig_pa,
+    name = fig_pa_vol,
     command = 
-      wrap_plots(plots_quantiles[-c(3, 21:25)], ncol = 3) +
+      wrap_plots(plots_quantiles[c(1:2, 4:7, 9:13)], ncol = 3) +
       plot_layout(axes = 'collect') + plot_annotation(tag_levels = 'A')
   ),
-  # Save figure for physical activity metrics
+  # Save figure for physical activity volume metrics
   tar_target(
-    name = fig_pa_tiff,
+    name = fig_pa_vol_tiff,
     command = ggsave(
-      "paper/fig_pa.tiff",
-      fig_pa,
+      "paper/fig_pa_vol.tiff",
+      fig_pa_vol,
       scaling = 0.5,
       height = 10,
       width = 5
     ),
     format = "file"
-  ),  
+  ),
+  # Build figure for physical activity intensity distribution metrics
+  tar_target(
+    name = fig_pa_int_distri,
+    command = 
+      wrap_plots(plots_quantiles[c(14:20)], ncol = 3) +
+      plot_layout(axes = 'collect') + plot_annotation(tag_levels = 'A')
+  ),
+  # Save figure for physical activity metrics
+  tar_target(
+    name = fig_pa_int_distri_tiff,
+    command = ggsave(
+      "paper/fig_pa_int_distri.tiff",
+      fig_pa_int_distri,
+      scaling = 0.5,
+      height = 10,
+      width = 5
+    ),
+    format = "file"
+  ), 
   # Build figure for sedentary behaviour metrics
   tar_target(
     name = fig_sed,
@@ -403,10 +435,10 @@ list(
     ),
     format = "file"
   ),
-  # Build the report for ICAMPAM absract
-  tar_render(report, "icampam/analysis.Rmd", output_dir = "icampam/"),
+  # Build the report for ICAMPAM abstract
+  tar_render(icampam_abstract, "icampam/analysis.Rmd", output_dir = "icampam/"),
   
-  # Build the paper
+  # Build the paper including all analysis
   tar_quarto(paper, "paper/manuscript.qmd")
 )
 
