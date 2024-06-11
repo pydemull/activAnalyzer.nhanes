@@ -552,7 +552,7 @@ list(
   # Build the report for ICAMPAM abstract
   tar_render(icampam_abstract, "icampam/analysis.Rmd", output_dir = "icampam/"),
   
-  # Build the paper including all analysis
+  # Build the paper including all analyses
   tar_quarto(paper, "paper/manuscript.qmd")
 )
 
