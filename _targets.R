@@ -364,6 +364,7 @@ list(
           yank("numeric") |>
           mutate(
             across(c(mean, sd), ~ round_half_up(.x, digits = 2)), 
+            across(c(mean, sd), ~ formatC(.x, format = "f", digits = 2, big.mark = ",")),
             `Mean (SD) wear time for participants with 4+ valid days (min)` = paste0(mean, " (", sd, ")")
             ) |>
           select(CAT_AGE, "Mean (SD) wear time for participants with 4+ valid days (min)")
@@ -499,8 +500,10 @@ list(
       "paper/fig_pa_vol.tiff",
       fig_pa_vol,
       scaling = 0.5,
-      height = 10,
-      width = 5
+      height = 14,
+      width = 12,
+      unit = "cm",
+      dpi = 300
     ),
     format = "file"
   ),
@@ -518,8 +521,10 @@ list(
       "paper/fig_pa_int_distri.tiff",
       fig_pa_int_distri,
       scaling = 0.5,
-      height = 10,
-      width = 5
+      height = 12,
+      width = 12,
+      unit = "cm",
+      dpi = 300
     ),
     format = "file"
   ), 
@@ -536,9 +541,11 @@ list(
     command = ggsave(
       "paper/fig_sed.tiff",
       fig_sed,
-      scaling = 0.6,
-      height = 5,
-      width = 7
+      scaling = 0.5,
+      height = 12,
+      width = 12,
+      unit = "cm",
+      dpi = 300
     ),
     format = "file"
   ),
