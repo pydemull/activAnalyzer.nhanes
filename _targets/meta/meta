@@ -1,5 +1,5 @@
 name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
-.Random.seed|object|07c42011f5ad9b9c|||||||||||||||
+.Random.seed|object|c76b26058dec820d|||||||||||||||
 activ_process_all_nhanes|function|63937b2adaac6ff0|||||||||||||||
 activ_process_nhanes|function|dff09dd4c5fe0117|||||||||||||||
 config|stem|105a5e5b39a0e431|8f8fa9e4b259067b|ef46db3751d8e999|-1931060652||t19883.3185496952s|e3fe1faf80820e02|762|rds|local|vector|||0.781||
@@ -23,28 +23,34 @@ df_paxraw_d|stem|2d354a0412a8da69|978111f45dedb20a|ef46db3751d8e999|1110746559||
 df_paxraw_d_all_metrics|stem|ba9f56f1ad1e482f|146148ba7d339103|3bd2cd4e0b6414c8|-74847685||t19884.0530175449s|a4c8d2d37afb65a7|778798|rds|local|group|||8531.875||
 df_paxraw_d_nest|stem|13126248bb69edd0|2a54633c7439fd59|063bdbd8d6c2466c|-1553133681||t19883.3335257989s|9241681b35648210|331342477|rds|local|vector|||57.969||
 fig_pa|stem|2249747300e6f0bc|1880358cff3ab8c7|8171c105aaa07927|127828660||t19884.1711469993s|83993cc9b36d34c1|141395966|rds|local|vector|||0.016||
-fig_pa_int_distri|stem|12f9876d301b4e60|d9ece3123279f049|e9e3ca274d6578ca|-1588736015||t19884.7906886188s|318d4eefc88dc668|52202005|rds|local|vector|||0.016||
-fig_pa_int_distri_tiff|stem|b6bb6b2cebd73faf|ac96cbcae27a2b6a|862ffd27233b4d67|-263979101|paper/fig_pa_int_distri.tiff|t19884.7912390221s|5d74ccdebeb5f658|13500204|file|local|vector|||3.5|Removed 19 rows containing missing values or values outside the scale rangegeom_dotsinterval.|
+fig_pa_int_distri|stem|a85602987a0fb4eb|d9ece3123279f049|cf0d059ba4ec8403|-1588736015||t19884.8123170158s|3c234bd61ddc5642|52200939|rds|local|vector|||0.032||
+fig_pa_int_distri_tiff|stem|3ed6afc1cc11d000|ac96cbcae27a2b6a|04cc90747f55c979|-263979101|paper/fig_pa_int_distri.tiff|t19884.8141566427s|5d74ccdebeb5f658|13500204|file|local|vector|||6.703|Removed 19 rows containing missing values or values outside the scale rangegeom_dotsinterval.|
 fig_pa_tiff|stem|48cf9134c734da71|5b34f235f7d2953c|6c28ad15ca9580e9|436061115|paper/fig_pa.tiff|t19884.1724076394s|5d74ccdebeb5f658|13500204|file|local|vector|||7.829|Removed 19 rows containing missing values or values outside the scale rangegeom_dotsinterval.|
-fig_pa_vol|stem|e8d19aae22308e18|28af0a9e4e0ee5c8|e9e3ca274d6578ca|1228464604||t19884.790966377s|921178580c17cba2|81937473|rds|local|vector|||0.015||
-fig_pa_vol_tiff|stem|0e685640de69f929|18266ea38f3c8aab|7a72d0ef71e8ded0|-1314254349|paper/fig_pa_vol.tiff|t19884.791310315s|5d74ccdebeb5f658|13500204|file|local|vector|||4.094||
-fig_sed|stem|98c3fd6d506a6a68|39727abbbe7ff166|e9e3ca274d6578ca|814175120||t19884.7911685489s|6d153affc9dae0c3|44769658|rds|local|vector|||1.312||
-fig_sed_tiff|stem|bdd23587398a23ff|add23701d336dc40|d34a3d65e9ee9761|2007279688|paper/fig_sed.tiff|t19884.7928912614s|44114852bc8db8ef|9450204|file|local|vector|||4.063||
+fig_pa_vol|stem|262fa60921ba4401|28af0a9e4e0ee5c8|cf0d059ba4ec8403|1228464604||t19884.8116836909s|83c522622c9d609b|81936770|rds|local|vector|||0.532||
+fig_pa_vol_tiff|stem|4c0ea99168f1173f|18266ea38f3c8aab|bec1a5760b80d9b4|-1314254349|paper/fig_pa_vol.tiff|t19884.8124662032s|5d74ccdebeb5f658|13500204|file|local|vector|||8.625||
+fig_sed|stem|8e47d92c68e6e296|0eb8eee05eccfeb7|cf0d059ba4ec8403|814175120||t19885.8049211403s|3afb7c06ef280fd3|52202234|rds|local|vector|||0.078||
+fig_sed_tiff|stem|0f8c7e43c389cc87|add23701d336dc40|4b710544741a2872|2007279688|paper/fig_sed.tiff|t19885.8063520894s|44114852bc8db8ef|9450204|file|local|vector|||5.656||
 format_tab_quantiles|function|451f60be358302be|||||||||||||||
-get_adj_quantiles_by|function|1644a72147e5658b|||||||||||||||
+format_tab_quantiles2|function|ce8e6074e4ae3bd9|||||||||||||||
+get_adj_quantiles_by|function|c6733db3491e69ec|||||||||||||||
 icampam_abstract|stem|4666d15475c4149d|2bc0ed337ca0437d|10e8695178d26927|-273553474|icampam/analysis.html*icampam/analysis.Rmd|t19884.7899888389s|8bca19d63f05829f|1470881|file|local|vector|||16.64||
 metrics_list|stem|7825fdc03061a89e|29c3f32174aa13ca|c44d90548df578c0|-206310728||t19884.1700773932s|74c6dee26eb45e63|210|rds|local|vector|||0||
-metrics_quantiles|stem|7f44cc17ae0aa248|c60273d64e5b6c4c|7590cfda621cd6b1|27924165||t19884.3631033761s|d2fd920f2cc2ee43|3534|rds|local|vector|||4.234||
+metrics_quantiles|stem|a32a4d44aaa4bdd6|c60273d64e5b6c4c|c193854032ac04b8|27924165||t19884.8108831935s|510f35e8935b9d22|3590|rds|local|vector|||4.031||
 n_nhanes_c|stem|b15343e311605b1a|c694accaa53047ca|db677a6a8af42808|-265731289||t19883.3339156901s|b6d2e014b07bc296|51|rds|local|vector|||0||
 n_nhanes_d|stem|d74792c5ffd5e1c0|1da03e0f79309e43|857c893b8b2a6965|1117929683||t19883.3339183455s|b6d2e014b07bc296|51|rds|local|vector|||0.016||
 n_nhanes_paxraw_c|stem|590db334a5ceecf9|26aee922c7745a96|ed5bbdfd983d89ab|-662040478||t19883.3363896686s|b6d2e014b07bc296|51|rds|local|vector|||5.906||
 n_nhanes_paxraw_d|stem|0323f2ced1d2c9f1|24417ce95eb7f234|063bdbd8d6c2466c|-918940484||t19883.3312117933s|b6d2e014b07bc296|51|rds|local|vector|||3.656||
 n_paxraw_valid|stem|8b4a3a23e961c59a|783f3340cf29b2d2|da5bdba2d8d7873c|-1468901763||t19884.1700739104s|b6d2e014b07bc296|51|rds|local|vector|||0.015||
-paper|stem|7efcaf4e7567a6b9|6c824373ab82fb66|c413194606cc7497|-1607195735|paper/manuscript.docx*paper/manuscript.html*paper/manuscript.qmd|t19884.792746253s|7bdaecace5392bcb|221777|file|local|vector|||110.281||
+paper|stem|2a7478e5b23c6ada|de1ab0cd9be30907|8f89026d592da41b|-1607195735|paper/manuscript.docx*paper/manuscript.html*paper/manuscript.qmd|t19885.80623499s|2ec066fafd1b76ab|259984|file|local|vector|||104.14||
+part_char_list|stem|4d03b919e69ec6ef|bba5031d14518f70|ef46db3751d8e999|-2074120780||t19884.8340625248s|0e696b453c03de61|85|rds|local|vector|||3.375|le package activAnalyzer a été compilé avec la version R 4.3.3. le package ggplot2 a été compilé avec la version R 4.3.3. le package survey a été compilé avec la version R 4.3.3. le package Matrix a été compilé avec la version R 4.3.3|
+part_char_quantiles|stem|dc86fac3b7cc62aa|16012c80a2f5a631|e8c5d06acaa1f9f5|1045859692||t19884.9243535824s|2be16343ed0a782e|915|rds|local|vector|||0.954||
 plot_adj_quantiles|function|11bb78164e877460|||||||||||||||
-plots_quantiles|stem|77e7bc7e9a8cbf10|f95cdc51fe5b67ab|23933199cabb247f|-344273798||t19884.7904290136s|038c8e22bc45305d|185888465|rds|local|vector|||0.766||
+plots_quantiles|stem|04aaf7cb5dd0fc2e|f95cdc51fe5b67ab|6e57565d669f57a6|-344273798||t19884.8113301073s|f893ea081091e34c|185889973|rds|local|vector|||1.078||
+prop_paxraw_valid|stem|7974cb252cf63fde|ad4b875da825157f|f9b260467bbf7e34|225878483||t19884.9324394797s|c9aaea90a821e608|53|rds|local|vector|||0||
 report|stem|8ddd84b150ec7d6d|2bc0ed337ca0437d|10e8695178d26927|787668912|icampam/analysis.html*icampam/analysis.Rmd|t19884.1700539705s|df34702ec6ca21fc|1470848|file|local|vector|||17.438||
-tab_pa_int_distri_metrics|stem|c0dc13ea1083019f|d95248b5773aff4c|3b54fb8e74ced1ae|1521096093||t19884.5821949675s|125c5d810231c344|7896|rds|local|vector|||0.172||
+tab_pa_int_distri_metrics|stem|57bf1575972d4c9b|d95248b5773aff4c|56ae78d93dedef1a|1521096093||t19884.8113544429s|2fb65b1d5cfbded8|8005|rds|local|vector|||0.063||
 tab_pa_metrics|stem|25be3b694b65026d|2bd1470fab6c73c6|d7d8b8ee60ddb28f|711956597||t19884.170612091s|f4536f0187b73a09|12516|rds|local|vector|||0.14||
-tab_pa_vol_metrics|stem|b72b2b6b160a83cb|fdc983d850eaef2c|3b54fb8e74ced1ae|-1964530914||t19884.5822064981s|cae46a696d54fe54|9397|rds|local|vector|||0.469||
-tab_sed_metrics|stem|3d62b95e723458cb|f18a8a96474e1a48|3b54fb8e74ced1ae|-1654456427||t19884.5821889888s|2fab14f2569e80f4|6573|rds|local|vector|||0.297||
+tab_pa_vol_metrics|stem|b72b2b6b160a83cb|fdc983d850eaef2c|56ae78d93dedef1a|-1964530914||t19884.8113511496s|cae46a696d54fe54|9397|rds|local|vector|||0.172||
+tab_part_char|stem|422afd409272210d|d10cead8bd3687cf|dc3c9b226335a928|346821250||t19885.635541725s|e6e71b73b14a906d|4020|rds|local|vector|||0.078||
+tab_response_rate_accel|stem|318a470f5bd1c78c|671fb595abed81d9|67a53971e16dda80|-1158310485||t19885.7919845387s|60b4b72a4c1ab113|5387|rds|local|vector|||0.281||
+tab_sed_metrics|stem|d9fa1d4c9e93e2c7|85f889fc4f9fea7c|56ae78d93dedef1a|-1654456427||t19885.6195178931s|4a7ff97b6d5d2b11|7242|rds|local|vector|||0.094||

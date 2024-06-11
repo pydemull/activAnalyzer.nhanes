@@ -20,6 +20,7 @@ tar_option_set(
     "purrr",
     "readr",
     "rnhanesdata",
+    "skimr",
     "survey",
     "tibble",
     "tidyr"
@@ -159,7 +160,8 @@ list(
     name = df_final,
     command = list(df_demo_all_waves, df_bmx_all_waves, df_paxmetrics_all_waves) |> 
       reduce(full_join, by = "SEQN") |> 
-      rename(M1_3 = "M1/3") |>  # change name because it is problematic for the svyby() function
+      rename(M1_3 = "M1/3") |>  # change name because it is problematic for the 
+                                # survey::svyby() function
       mutate(
         RIDAGEEX_UPDATED = if_else(is.na(RIDAGEEX), RIDAGEYR, RIDAGEEX),
         CAT_AGE = case_when(
@@ -204,6 +206,12 @@ list(
     name = n_paxraw_valid,
     command = nrow(df_final_4_valid_days)
   ),
+  # Compute the proportion of participants with valid accelerometer data for NHANES 2003-2006
+  # (i.e., with 4 valid days or more)
+  tar_target(
+    name = prop_paxraw_valid,
+    command = round_half_up(n_paxraw_valid / (n_nhanes_paxraw_c + n_nhanes_paxraw_c) * 100, digits = 0)
+  ),
   # Reweight participants for the 4-yr cycle with updated age categories
   tar_target(
     name = df_final_rw, 
@@ -240,12 +248,42 @@ list(
     name = degf_design_valid_pam,
     command = degf(design_valid_pam)
   ),
+  # Set the list of the population characteristics of interest
+  tar_target(
+    name = part_char_list,
+    command = c("RIDAGEEX_UPDATED", "BMXHT", "BMXWT", "BMXBMI")
+  ),
   # Set the list of the metrics of interest
   tar_target(
     name = metrics_list,
     command = df_final_rw |> select(total_counts_axis1:gini) |> names()
   ),
+  # Compute the estimates of the quantiles for the population characteristics 
+  # of interest (from participants with 4 valid days or more)
+  tar_target(
+    name = part_char_quantiles,
+    command = 
+      lapply(
+        part_char_list,
+        get_adj_quantiles_by,
+        by = "CAT_AGE",
+        design = design_valid_pam
+      ) |>
+      bind_rows()  |>
+      mutate(
+        var = as.factor(var) |> # var is a variable built when using the get_adj_quantiles_by()
+                                # function
+          fct_relevel(part_char_list) |>
+          fct_recode(
+            "Age (yr)" = "RIDAGEEX_UPDATED",
+            "Height (cm)" = "BMXHT",
+            "Weight (kg)" = "BMXWT",
+            "BMI (km/m²)" = "BMXBMI",
+          )
+      )
+  ),
   # Compute the estimates of the quantiles for the activity metrics of interest
+  # (from participants with 4 valid days or more)
   tar_target(
     name = metrics_quantiles,
     command =
@@ -257,7 +295,8 @@ list(
       ) |>
       bind_rows() |>
       mutate(
-        var = as.factor(var) |>
+        var = as.factor(var) |> # var is a variable built when using the get_adj_quantiles_by()
+                                # function
           fct_relevel(metrics_list) |>
           fct_recode(
             "Total vertical counts" = "total_counts_axis1",
@@ -283,7 +322,71 @@ list(
           )
       )
   ), 
-  # Build table for physical activity volume metrics
+  # Build table for participant characteristics (weighted results) using 
+  # participants with 4 valid days or more
+  tar_target(
+    name = tab_part_char,
+    command = 
+      {
+      # Get the number of participants by age categories  
+        df_n <-
+          df_final_4_valid_days |>
+          group_by(CAT_AGE) |>
+          summarise(N = formatC(as.character(n()), big.mark = ",")) |> 
+          pivot_wider(names_from = CAT_AGE, values_from = N) |> 
+          mutate(var = "N") |> 
+          select(var, everything())
+    
+      # Get the final table
+        part_char_quantiles |>
+          format_tab_quantiles2(nb_part = df_n, col_var_name = "Variable")
+      }
+  ),
+  # Build table for response rates for the number of valid days wearing the accelerometer
+  # and for wear time for participants with 4+ valid days
+  tar_target(
+    name = tab_response_rate_accel,
+    command = 
+      df_final |>
+      filter(!is.na(PAXSTAT) & !is.na(PAXCAL)) |>
+      count(CAT_AGE, valid_days) |>
+      group_by(CAT_AGE) |>
+      mutate(prop = round_half_up(n / sum(n) * 100, digits = 1)) |>
+      select(-n) |>
+      pivot_wider(names_from = valid_days, values_from = prop) |>
+      left_join(
+        
+        # Add wear time results for participants with >= 4 valid days
+        df_final_4_valid_days |>
+          group_by(CAT_AGE) |>
+          select(wear_time) |>
+          skim() |>
+          yank("numeric") |>
+          mutate(
+            across(c(mean, sd), ~ round_half_up(.x, digits = 2)), 
+            `Mean (SD) wear time for participants with 4+ valid days (min)` = paste0(mean, " (", sd, ")")
+            ) |>
+          select(CAT_AGE, "Mean (SD) wear time for participants with 4+ valid days (min)")
+        
+      ) |> 
+      rename("Age category" = CAT_AGE) |>
+      flextable() |>
+      bold(part = "header") |>
+      add_header_row(
+        values = c("Age category", "Number of valid days of accelerometer wear (%)", "Mean (SD) wear time for participants with 4+ valid days (min)"),
+        colwidths = c(1, 8, 1),
+        top = TRUE
+      ) |> 
+      merge_v(j = 1, part = "header") |> 
+      merge_v(j = 10, part = "header") |> 
+      align(i = 1, j = 2:9, align = "center", part = "header") |> 
+      valign(i = c(1, 2), j = c(1, 10), valign = "top", part = "header") |> 
+      width(j = c(2:9), width = 0.5) |> 
+      width(j = 10, width = 2)
+  ),
+  
+  # Build table for physical activity volume metrics (weighted results) using 
+  # participants with 4 valid days or more
   tar_target(
     name = tab_pa_vol_metrics,
     command = 
@@ -305,7 +408,8 @@ list(
       ) |> 
       format_tab_quantiles(col_var_name = "Metric")
   ),
-  # Build table for physical activity intensity distribution metrics
+  # Build table for physical activity intensity distribution metrics (weighted results)  
+  # using participants with 4 valid days or more
   tar_target(
     name = tab_pa_int_distri_metrics,
     command = 
@@ -323,7 +427,8 @@ list(
       ) |> 
       format_tab_quantiles(col_var_name = "Metric")
   ),
-  # Build table for sedentary behaviour metrics
+  # Build table for sedentary behaviour metrics (weighted results) using 
+  # participants with 4 valid days or more
   tar_target(
     name = tab_sed_metrics,
     command = 
@@ -331,6 +436,7 @@ list(
       filter(
         var %in% c(
           "Sedentary time (min)",
+          "% Wear time sedentary",
           "Sedentary breaks",
           "Median bout duration (min)",
           "Usual bout duration (min)",
@@ -340,7 +446,8 @@ list(
       ) |> 
       format_tab_quantiles(col_var_name = "Metric")
   ),
-  # Build plots showing individual data points along with the quantile estimates
+  # Build plots showing individual data points along with the quantile estimates  using 
+  # participants with 4 valid days or more
   tar_target(
     name = plots_quantiles, 
     command =
@@ -404,7 +511,7 @@ list(
       wrap_plots(plots_quantiles[c(14:20)], ncol = 3) +
       plot_layout(axes = 'collect') + plot_annotation(tag_levels = 'A')
   ),
-  # Save figure for physical activity metrics
+  # Save figure for physical activity intensity distribution metrics
   tar_target(
     name = fig_pa_int_distri_tiff,
     command = ggsave(
@@ -420,7 +527,7 @@ list(
   tar_target(
     name = fig_sed,
     command = 
-      wrap_plots(plots_quantiles[c(3, 21:25)], ncol = 3) +
+      wrap_plots(plots_quantiles[c(3, 8, 21:25)], ncol = 3) +
       plot_layout(axes = 'collect') + plot_annotation(tag_levels = 'A')
   ),
   # Save figure for sedentary behaviour metrics
