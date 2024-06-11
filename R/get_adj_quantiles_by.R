@@ -10,7 +10,8 @@ get_adj_quantiles_by <- function(x, by, design) {
       FUN = survey::svyquantile,
       quantile = c(0.25, 0.5, 0.75),
       vartype = "ci",
-      level = 0.95
+      level = 0.95,
+      na.rm = TRUE
     )
   
   # Remove row names
